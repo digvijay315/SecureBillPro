@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Jost', ui-sans-serif, system-ui, sans-serif;
+  
+  --color-lagoon-50: #F4EFE6;
+  --color-lagoon-100: #E6DCB8;
+  --color-lagoon-200: #D8C59A;
+  --color-lagoon-300: #C7AE7D;
+  --color-lagoon-400: #CCA273;
+  --color-lagoon-500: #BA8551;
+  --color-lagoon-600: #A67241;
+  --color-lagoon-700: #2C3531;
+  --color-lagoon-800: #1E2724;
+  --color-lagoon-900: #151E1C;
+  --color-lagoon-950: #0D1412;
+  
+  --color-saffron-300: #DFB876;
+  --color-saffron-400: #CCA273;
+  --color-saffron-500: #BA8551;
+  --color-saffron-600: #A67241;
+  --color-saffron-700: #8C5C30;
+  
+  --color-gold: #BA8551;
+  --color-gold-soft: #DFB876;
+  --color-ink: #151E1C;
+  --color-linen: #FAF8F5;
+  --color-linen-card: #FFFFFF;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Jost', ui-sans-serif, system-ui, sans-serif;
+  background-color: #FAF8F5;
+  color: #151E1C;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(186, 133, 81, 0.25); 
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(186, 133, 81, 0.5); 
+}
+
+/* Luxury card shadow */
+.stayflow-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(186, 133, 81, 0.18);
+  box-shadow: 0 15px 35px -15px rgba(21, 30, 28, 0.08), 0 4px 12px -2px rgba(21, 30, 28, 0.03);
+}
+
