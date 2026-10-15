@@ -148,11 +148,23 @@ export default function PublicGuestPortal() {
         setLoading(true);
         const res = await publicAPI.getMenu(hotelId);
         if (res.data.success) {
-          setHotel(res.data.data.hotel);
+          const hotelData = res.data.data.hotel;
+          setHotel(hotelData);
           setDishes(res.data.data.dishes || []);
           setCategories(res.data.data.categories || []);
           setTables(res.data.data.tables || []);
           if (preselectedTable) setSelectedTable(preselectedTable);
+
+          if (hotelData?.name) {
+            document.title = `${hotelData.name} - Digital Menu & Order`;
+          }
+          if (hotelData?.logo) {
+            const link = document.querySelector("link[rel*='icon']") || document.createElement("link");
+            link.type = "image/x-icon";
+            link.rel = "shortcut icon";
+            link.href = hotelData.logo;
+            document.getElementsByTagName("head")[0].appendChild(link);
+          }
         } else {
           setError(res.data.message || "Could not load menu");
         }
@@ -554,65 +566,73 @@ export default function PublicGuestPortal() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-100 p-4">
-        <div className="w-14 h-14 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin mb-4"></div>
-        <p className="text-base font-semibold text-amber-400">Loading Restaurant Menu...</p>
-        <p className="text-xs text-slate-400 mt-1">Please wait while we fetch the latest dishes</p>
+      <div className="min-h-screen bg-[#F8FAF9] flex flex-col items-center justify-center text-slate-900 p-6 relative overflow-hidden font-sans">
+        <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mb-4 shadow-lg shadow-amber-500/10">
+          <Utensils className="w-8 h-8 text-amber-600 animate-pulse" />
+        </div>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+          <p className="text-base font-bold text-slate-800 tracking-wide">Loading Digital Dining Menu...</p>
+        </div>
+        <p className="text-xs text-slate-500">Curating the chef's specials & live pricing</p>
       </div>
     );
   }
 
   if (error || !hotel) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-100 p-6 text-center">
-        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 mb-4">
-          <AlertCircle className="w-8 h-8" />
+      <div className="min-h-screen bg-[#F8FAF9] flex flex-col items-center justify-center text-slate-900 p-6 text-center font-sans">
+        <div className="w-20 h-20 rounded-3xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-500 mb-5 shadow-lg shadow-rose-500/10">
+          <AlertCircle className="w-10 h-10" />
         </div>
-        <h2 className="text-xl font-bold text-slate-100 mb-2">Menu Unavailable</h2>
-        <p className="text-sm text-slate-400 max-w-sm mb-6">{error || "Could not find restaurant."}</p>
+        <h2 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">Menu Currently Unavailable</h2>
+        <p className="text-sm text-slate-500 max-w-sm mb-6 leading-relaxed">
+          {error || "Could not find or connect to this dining establishment."}
+        </p>
         <button
           onClick={() => window.location.reload()}
-          className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm transition-all"
+          className="px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs tracking-wider uppercase transition-all shadow-lg shadow-amber-500/20 active:scale-95"
         >
-          Try Again
+          Reload Menu
         </button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 pb-28 font-sans selection:bg-amber-500 selection:text-slate-950">
-      {/* Hotel Header / Hero Card */}
-      <header className="relative bg-gradient-to-b from-teal-950/80 via-slate-900 to-slate-950 border-b border-teal-800/30 px-4 pt-6 pb-5 shadow-lg">
+    <div className="min-h-screen bg-[#F8FAF9] text-slate-900 pb-32 font-sans selection:bg-amber-500 selection:text-slate-950 relative overflow-x-hidden">
+      {/* Hotel Header / Hero Card - Light Theme */}
+      <header className="relative bg-white border-b border-slate-200 px-4 pt-5 pb-5 shadow-sm">
         <div className="max-w-xl mx-auto flex items-start gap-4">
           {Boolean(hotel.logo && hotel.logo.trim()) ? (
             <img
               src={hotel.logo}
               alt={hotel.name}
-              className="w-16 h-16 rounded-2xl object-cover border-2 border-amber-500/30 shadow-md bg-slate-900 shrink-0"
+              className="w-16 h-16 rounded-2xl object-cover border border-amber-500/30 shadow-md bg-white shrink-0"
             />
           ) : (
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-slate-950 font-black text-2xl shrink-0 shadow-md">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center text-slate-950 font-black text-2xl shrink-0 shadow-md shadow-amber-500/20">
               {hotel.name?.charAt(0) || "S"}
             </div>
           )}
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                {hotel.type || "Restaurant"}
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase bg-amber-50 text-amber-700 border border-amber-200">
+                {hotel.type || "Restaurant & Lounge"}
               </span>
-              <span className="flex items-center gap-1 text-[11px] text-emerald-400 font-medium">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Open for Dining
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Kitchen Open
               </span>
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-black text-white truncate mt-1 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 truncate tracking-tight">
               {hotel.name}
             </h1>
 
-            <p className="text-xs text-slate-400 flex items-center gap-1 mt-1 truncate">
-              <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5 truncate">
+              <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
               <span>{hotel.address || `${hotel.city}, ${hotel.state || ""}`}</span>
             </p>
           </div>
@@ -622,43 +642,43 @@ export default function PublicGuestPortal() {
         {trackedOrder && (
           <div className="max-w-xl mx-auto mt-4">
             <div
-              className={`p-3.5 rounded-2xl border backdrop-blur-md transition-all shadow-md ${
+              className={`p-3.5 rounded-2xl border transition-all shadow-sm ${
                 trackedOrder.approvalStatus === "pending"
-                  ? "bg-amber-500/10 border-amber-500/40 text-amber-300"
+                  ? "bg-amber-50 border-amber-200 text-amber-900"
                   : trackedOrder.approvalStatus === "approved"
-                  ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-300"
-                  : "bg-rose-500/10 border-rose-500/40 text-rose-300"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-900"
+                  : "bg-rose-50 border-rose-200 text-rose-900"
               }`}
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5">
                   {trackedOrder.approvalStatus === "pending" && (
-                    <Clock className="w-5 h-5 animate-spin text-amber-400 shrink-0" />
+                    <Clock className="w-5 h-5 animate-spin text-amber-600 shrink-0" />
                   )}
                   {trackedOrder.approvalStatus === "approved" && (
-                    <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
                   )}
                   {trackedOrder.approvalStatus === "rejected" && (
-                    <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
+                    <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
                   )}
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold text-sm tracking-wide">
+                      <span className="font-bold text-sm tracking-wide text-slate-900">
                         Order #{trackedOrder.orderDisplayId}
                       </span>
-                      <span className="text-[11px] px-1.5 py-0.2 rounded bg-black/40 border border-white/10">
+                      <span className="text-[11px] px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-bold">
                         {trackedOrder.orderType === "Table" ? `Table ${trackedOrder.tableNo || ""}` : "Takeaway"}
                       </span>
                       {trackedOrder.pendingAddons?.some((a) => a.status === "pending") && (
-                        <span className="px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-300 text-[10px] font-black animate-pulse">
-                          + Add-on items pending approval
+                        <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-black animate-pulse">
+                          + Add-on items pending
                         </span>
                       )}
                     </div>
-                    <p className="text-xs mt-0.5 opacity-90">
-                      {trackedOrder.approvalStatus === "pending" && "Waiting for restaurant to verify & accept..."}
+                    <p className="text-xs mt-0.5 text-slate-600">
+                      {trackedOrder.approvalStatus === "pending" && "Sent to counter. Waiting for staff approval..."}
                       {trackedOrder.approvalStatus === "approved" &&
-                        `Order Accepted! Kitchen status: ${trackedOrder.kdsStatus?.toUpperCase() || "PREPARING"}`}
+                        `Order Accepted! Kitchen: ${trackedOrder.kdsStatus?.toUpperCase() || "PREPARING"}`}
                       {trackedOrder.approvalStatus === "rejected" &&
                         `Declined: ${trackedOrder.rejectionReason || "Items unavailable"}`}
                     </p>
@@ -675,11 +695,11 @@ export default function PublicGuestPortal() {
                           icon: "info",
                           title: "Add More Items",
                           text: `Select any item from the menu below to add to your Table ${trackedOrder.tableNo} order!`,
-                          timer: 2500,
+                          timer: 2000,
                           showConfirmButton: false,
                         });
                       }}
-                      className="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center gap-1 shadow-sm transition-all"
+                      className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center gap-1 shadow-sm transition-all active:scale-95"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Add Items</span>
@@ -693,7 +713,7 @@ export default function PublicGuestPortal() {
                       setTrackedOrder(null);
                     }}
                     title="Dismiss tracker"
-                    className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white"
+                    className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -703,15 +723,16 @@ export default function PublicGuestPortal() {
           </div>
         )}
 
-        {/* Tab Controls (Dine-In, Parcel, Book Table, Track Order) */}
+
+        {/* Tab Navigation Pill Bar */}
         <div className="max-w-xl mx-auto mt-4">
-          <div className="grid grid-cols-4 gap-1 p-1 bg-slate-900/90 border border-teal-800/40 rounded-2xl backdrop-blur-md">
+          <div className="grid grid-cols-4 gap-1 p-1 bg-slate-200/80 border border-slate-300/80 rounded-2xl backdrop-blur-md shadow-sm">
             <button
               onClick={() => setActiveTab("dine_in")}
-              className={`flex items-center justify-center gap-1 py-2.5 px-1 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-1 rounded-xl text-xs font-bold transition-all ${
                 activeTab === "dine_in"
-                  ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800/50"
+                  ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
               }`}
             >
               <Utensils className="w-3.5 h-3.5 shrink-0" />
@@ -720,10 +741,10 @@ export default function PublicGuestPortal() {
 
             <button
               onClick={() => setActiveTab("parcel")}
-              className={`flex items-center justify-center gap-1 py-2.5 px-1 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-1 rounded-xl text-xs font-bold transition-all ${
                 activeTab === "parcel"
-                  ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800/50"
+                  ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
               }`}
             >
               <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
@@ -732,10 +753,10 @@ export default function PublicGuestPortal() {
 
             <button
               onClick={() => setActiveTab("table_booking")}
-              className={`flex items-center justify-center gap-1 py-2.5 px-1 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-1 rounded-xl text-xs font-bold transition-all ${
                 activeTab === "table_booking"
-                  ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800/50"
+                  ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
               }`}
             >
               <CalendarDays className="w-3.5 h-3.5 shrink-0" />
@@ -744,31 +765,31 @@ export default function PublicGuestPortal() {
 
             <button
               onClick={() => setActiveTab("track_order")}
-              className={`flex items-center justify-center gap-1 py-2.5 px-1 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-1 rounded-xl text-xs font-bold transition-all ${
                 activeTab === "track_order"
-                  ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800/50"
+                  ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
               }`}
             >
-              <Search className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-              <span className="truncate">Track Order</span>
+              <Search className="w-3.5 h-3.5 shrink-0 text-amber-600" />
+              <span className="truncate">Track</span>
             </button>
           </div>
         </div>
 
         {/* Table Selector (Only for Dine-in tab) */}
         {activeTab === "dine_in" && (
-          <div className="max-w-xl mx-auto mt-3 p-3 bg-teal-950/40 border border-teal-800/40 rounded-2xl flex items-center justify-between gap-3">
+          <div className="max-w-xl mx-auto mt-3 p-3 bg-white border border-slate-200/80 rounded-2xl flex items-center justify-between gap-3 shadow-sm">
             <div className="flex items-center gap-2 text-xs">
-              <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-              <span className="text-slate-300 font-medium">Your Table:</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+              <span className="text-slate-800 font-bold">Your Table:</span>
             </div>
 
             <div className="flex items-center gap-2">
               <select
                 value={selectedTable}
                 onChange={(e) => setSelectedTable(e.target.value)}
-                className="bg-slate-900 border border-amber-500/40 rounded-xl px-3 py-1.5 text-xs font-bold text-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                className="bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-1.5 text-xs font-black text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer shadow-sm"
               >
                 <option value="">-- Choose Table --</option>
                 {tables.map((tbl) => (
@@ -788,20 +809,20 @@ export default function PublicGuestPortal() {
         {activeTab === "dine_in" || activeTab === "parcel" ? (
           <div>
             {/* Search Bar & Category Chips */}
-            <div className="sticky top-2 z-20 bg-slate-950/90 backdrop-blur-md pt-1 pb-3 flex flex-col gap-2.5">
+            <div className="sticky top-2 z-20 bg-[#F8FAF9]/95 backdrop-blur-md pt-1 pb-3 flex flex-col gap-2.5">
               <div className="relative">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Search dishes, drinks, thalis..."
+                  placeholder="Search dishes, curries, mocktails, desserts..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                  className="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-9 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 shadow-sm"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -812,10 +833,10 @@ export default function PublicGuestPortal() {
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
                 <button
                   onClick={() => setSelectedCategory("All")}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                     selectedCategory === "All"
                       ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20"
-                      : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+                      : "bg-white text-slate-700 hover:text-slate-950 border border-slate-200 shadow-sm"
                   }`}
                 >
                   All Items ({dishes.length})
@@ -825,10 +846,10 @@ export default function PublicGuestPortal() {
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                       selectedCategory === cat
                         ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20"
-                        : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+                        : "bg-white text-slate-700 hover:text-slate-950 border border-slate-200 shadow-sm"
                     }`}
                   >
                     {cat}
@@ -838,78 +859,83 @@ export default function PublicGuestPortal() {
             </div>
 
             {/* Dish Cards List */}
-            <div className="flex flex-col gap-3 mt-1">
+            <div className="flex flex-col gap-3 mt-1 pb-24">
               {filteredDishes.length === 0 ? (
-                <div className="p-8 text-center bg-slate-900/40 rounded-2xl border border-slate-800/60 my-6">
-                  <Utensils className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-slate-300">No dishes found</p>
-                  <p className="text-xs text-slate-500 mt-1">Try searching for something else or pick another category.</p>
+                <div className="p-10 text-center bg-white rounded-3xl border border-slate-200 my-6 shadow-sm">
+                  <Utensils className="w-10 h-10 text-amber-500/50 mx-auto mb-3" />
+                  <p className="text-sm font-bold text-slate-800">No dishes found</p>
+                  <p className="text-xs text-slate-500 mt-1">Try another keyword or select a different category.</p>
                 </div>
               ) : (
                 filteredDishes.map((dish) => {
                   const qtyInCart = cart[dish._id]?.quantity || 0;
+                  const isNonVeg = 
+                    dish.name.toLowerCase().includes("chicken") ||
+                    dish.name.toLowerCase().includes("mutton") ||
+                    dish.name.toLowerCase().includes("egg") ||
+                    dish.name.toLowerCase().includes("fish") ||
+                    dish.name.toLowerCase().includes("prawn") ||
+                    dish.name.toLowerCase().includes("meat");
 
                   return (
                     <div
                       key={dish._id}
-                      className="p-3.5 bg-slate-900/60 hover:bg-slate-900 border border-slate-800/80 rounded-2xl flex items-center justify-between gap-3 transition-all"
+                      className="p-3.5 bg-white hover:bg-slate-50/80 border border-slate-200/80 rounded-3xl flex items-center justify-between gap-3.5 transition-all shadow-sm group hover:border-amber-400"
                     >
                       {/* Dish Details */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          {/* Veg/Non-veg Dot Indicator */}
+                        <div className="flex items-center gap-2 mb-1">
+                          {/* Veg/Non-veg Dot Badge */}
                           <span
                             className={`w-3.5 h-3.5 rounded-sm border flex items-center justify-center shrink-0 ${
-                              dish.name.toLowerCase().includes("chicken") ||
-                              dish.name.toLowerCase().includes("mutton") ||
-                              dish.name.toLowerCase().includes("egg") ||
-                              dish.name.toLowerCase().includes("fish")
-                                ? "border-red-500"
-                                : "border-emerald-500"
+                              isNonVeg ? "border-rose-500 bg-rose-50" : "border-emerald-500 bg-emerald-50"
                             }`}
                           >
                             <span
                               className={`w-1.5 h-1.5 rounded-full ${
-                                dish.name.toLowerCase().includes("chicken") ||
-                                dish.name.toLowerCase().includes("mutton") ||
-                                dish.name.toLowerCase().includes("egg") ||
-                                dish.name.toLowerCase().includes("fish")
-                                  ? "bg-red-500"
-                                  : "bg-emerald-500"
+                                isNonVeg ? "bg-rose-500" : "bg-emerald-500"
                               }`}
                             ></span>
                           </span>
 
-                          <h3 className="font-bold text-sm text-slate-100 truncate">{dish.name}</h3>
+                          <h3 className="font-bold text-sm text-slate-900 truncate group-hover:text-amber-600 transition-colors">
+                            {dish.name}
+                          </h3>
                         </div>
 
-                        <p className="text-xs text-slate-400 mt-0.5">{dish.category || "General"}</p>
+                        <p className="text-[11px] text-slate-500">
+                          {dish.category || "Main Course"}
+                        </p>
 
-                        <p className="text-sm font-extrabold text-amber-400 mt-1.5">₹{dish.price}</p>
+                        <div className="flex items-baseline gap-2 mt-1.5">
+                          <span className="text-base font-black text-amber-600 tracking-tight">
+                            ₹{dish.price}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Image (if available) & Quantity Controls */}
                       <div className="flex flex-col items-end gap-2 shrink-0">
-                        {Boolean(dish.image && dish.image.trim()) && (
+                        {Boolean(dish.image && dish.image.trim()) ? (
                           <img
                             src={dish.image}
                             alt={dish.name}
-                            className="w-16 h-16 rounded-xl object-cover border border-slate-700 shadow-sm"
+                            className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-sm group-hover:scale-105 transition-transform"
                           />
-                        )}
+                        ) : null}
 
                         {qtyInCart > 0 ? (
-                          <div className="flex items-center bg-amber-500 text-slate-950 rounded-xl px-2 py-1 font-bold shadow-md shadow-amber-500/20">
+                          <div className="flex items-center bg-amber-500 text-slate-950 rounded-xl px-2 py-1 font-black shadow-md shadow-amber-500/20">
                             <button
                               onClick={() => removeFromCart(dish._id)}
-                              className="p-1 hover:opacity-80 active:scale-95"
+                              className="p-1 hover:opacity-75 active:scale-90 transition-transform"
                             >
                               <Minus className="w-3.5 h-3.5" />
                             </button>
                             <span className="px-2 text-xs font-black">{qtyInCart}</span>
                             <button
                               onClick={() => addToCart(dish)}
-                              className="p-1 hover:opacity-80 active:scale-95"
+                              className="p-1 hover:opacity-75 active:scale-90 transition-transform"
                             >
                               <Plus className="w-3.5 h-3.5" />
                             </button>
@@ -917,7 +943,7 @@ export default function PublicGuestPortal() {
                         ) : (
                           <button
                             onClick={() => addToCart(dish)}
-                            className="flex items-center gap-1 bg-slate-800 hover:bg-amber-500 text-slate-200 hover:text-slate-950 border border-slate-700 hover:border-amber-500 rounded-xl px-3 py-1.5 text-xs font-bold transition-all active:scale-95"
+                            className="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-500 text-amber-700 hover:text-slate-950 border border-amber-300 hover:border-amber-500 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all shadow-sm active:scale-95"
                           >
                             <Plus className="w-3.5 h-3.5" />
                             <span>Add</span>
@@ -932,68 +958,68 @@ export default function PublicGuestPortal() {
           </div>
         ) : activeTab === "table_booking" ? (
           /* VIEW 3: TABLE BOOKING FORM */
-          <div className="bg-slate-900/70 border border-teal-800/30 rounded-3xl p-5 shadow-xl">
+          <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm pb-10">
             <div className="flex items-center gap-2 mb-4">
-              <CalendarDays className="w-5 h-5 text-amber-400" />
-              <h2 className="text-base font-bold text-white">Reserve a Dining Table</h2>
+              <CalendarDays className="w-5 h-5 text-amber-600" />
+              <h2 className="text-base font-bold text-slate-900">Reserve a Dining Table</h2>
             </div>
-            <p className="text-xs text-slate-400 mb-5 leading-relaxed">
+            <p className="text-xs text-slate-500 mb-5 leading-relaxed">
               Planning lunch or dinner at {hotel.name}? Reserve your table in advance to avoid waiting.
             </p>
 
             <form onSubmit={handleTableBooking} className="flex flex-col gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold mb-1 block">Full Name *</label>
+                  <label className="text-xs text-slate-700 font-semibold mb-1 block">Full Name *</label>
                   <input
                     type="text"
                     required
                     placeholder="Enter your name"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold mb-1 block">Mobile Number *</label>
+                  <label className="text-xs text-slate-700 font-semibold mb-1 block">Mobile Number *</label>
                   <input
                     type="tel"
                     required
                     placeholder="10-digit mobile"
                     value={customerMobile}
                     onChange={(e) => setCustomerMobile(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold mb-1 block">Date *</label>
+                  <label className="text-xs text-slate-700 font-semibold mb-1 block">Date *</label>
                   <input
                     type="date"
                     required
                     min={new Date().toISOString().split("T")[0]}
                     value={bookingDate}
                     onChange={(e) => setBookingDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold mb-1 block">Time Slot *</label>
+                  <label className="text-xs text-slate-700 font-semibold mb-1 block">Time Slot *</label>
                   <input
                     type="time"
                     required
                     value={bookingTime}
                     onChange={(e) => setBookingTime(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold mb-1 block">Guests *</label>
+                  <label className="text-xs text-slate-700 font-semibold mb-1 block">Guests *</label>
                   <input
                     type="number"
                     min="1"
@@ -1001,26 +1027,26 @@ export default function PublicGuestPortal() {
                     required
                     value={guestsCount}
                     onChange={(e) => setGuestsCount(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs text-slate-300 font-semibold mb-1 block">Special Requests (Optional)</label>
+                <label className="text-xs text-slate-700 font-semibold mb-1 block">Special Requests (Optional)</label>
                 <textarea
                   rows="2"
                   placeholder="Birthday decoration, quiet corner, baby chair..."
                   value={bookingNotes}
                   onChange={(e) => setBookingNotes(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors"
                 ></textarea>
               </div>
 
               <button
                 type="submit"
                 disabled={submittingBooking}
-                className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-sm tracking-wide shadow-lg shadow-amber-500/20 hover:opacity-95 active:scale-98 transition-all disabled:opacity-50 mt-2"
+                className="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-sm tracking-wide shadow-md shadow-amber-500/20 active:scale-98 transition-all disabled:opacity-50 mt-2"
               >
                 {submittingBooking ? "Submitting Reservation..." : "Confirm Table Reservation Request"}
               </button>
@@ -1028,20 +1054,20 @@ export default function PublicGuestPortal() {
           </div>
         ) : (
           /* VIEW 4: TRACK ORDER BY MOBILE */
-          <div className="bg-slate-900/60 border border-teal-800/40 rounded-3xl p-5 backdrop-blur-md space-y-5">
+          <div className="bg-white border border-slate-200 rounded-3xl p-5 space-y-5 shadow-sm pb-10">
             <div>
-              <h2 className="text-base font-extrabold text-white flex items-center gap-2">
-                <Search className="w-5 h-5 text-amber-400" />
+              <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <Search className="w-5 h-5 text-amber-600" />
                 Track Your Active Order
               </h2>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                 Enter your 10-digit mobile number used during ordering to check live preparation status, bill details, or add more items to your table.
               </p>
             </div>
 
             <form onSubmit={handleTrackByMobile} className="flex flex-col gap-3">
               <div>
-                <label className="text-xs text-slate-300 font-semibold mb-1 block">Your Mobile Number *</label>
+                <label className="text-xs text-slate-700 font-semibold mb-1 block">Your Mobile Number *</label>
                 <div className="flex gap-2">
                   <input
                     type="tel"
@@ -1049,12 +1075,12 @@ export default function PublicGuestPortal() {
                     placeholder="Enter 10-digit mobile"
                     value={trackMobile}
                     onChange={(e) => setTrackMobile(e.target.value)}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition-colors"
                   />
                   <button
                     type="submit"
                     disabled={searchingTrack}
-                    className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-xs hover:opacity-90 active:scale-98 transition-all shrink-0 flex items-center gap-1.5"
+                    className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs active:scale-98 transition-all shrink-0 flex items-center gap-1.5 shadow-sm"
                   >
                     {searchingTrack ? (
                       <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -1069,21 +1095,21 @@ export default function PublicGuestPortal() {
 
             {/* Display Tracked Order Details if Found */}
             {trackedOrder && (
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-amber-500/30 space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
                   <div>
-                    <span className="text-xs font-black text-white">Order #{trackedOrder.orderDisplayId}</span>
-                    <span className="text-[10px] ml-2 px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">
+                    <span className="text-xs font-black text-slate-900">Order #{trackedOrder.orderDisplayId}</span>
+                    <span className="text-[10px] ml-2 px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold border border-amber-200">
                       {trackedOrder.orderType === "Table" ? `Table ${trackedOrder.tableNo}` : "Takeaway"}
                     </span>
                   </div>
                   <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full font-black uppercase ${
+                    className={`text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase ${
                       trackedOrder.approvalStatus === "approved"
-                        ? "bg-emerald-500/20 text-emerald-400"
+                        ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
                         : trackedOrder.approvalStatus === "pending"
-                        ? "bg-amber-500/20 text-amber-400"
-                        : "bg-rose-500/20 text-rose-400"
+                        ? "bg-amber-100 text-amber-800 border border-amber-300"
+                        : "bg-rose-100 text-rose-800 border border-rose-300"
                     }`}
                   >
                     {trackedOrder.approvalStatus === "approved"
@@ -1095,22 +1121,22 @@ export default function PublicGuestPortal() {
                 {/* Items Summary */}
                 <div className="space-y-1.5 max-h-48 overflow-y-auto text-xs pr-1">
                   {trackedOrder.items?.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center text-slate-300">
+                    <div key={idx} className="flex justify-between items-center text-slate-700">
                       <span>
-                        <span className="font-bold text-amber-400">{item.quantity}x</span> {item.name}
+                        <span className="font-bold text-amber-600">{item.quantity}x</span> {item.name}
                       </span>
-                      <span className="text-slate-400 font-mono">₹{item.price * item.quantity}</span>
+                      <span className="text-slate-600 font-mono">₹{item.price * item.quantity}</span>
                     </div>
                   ))}
 
                   {/* Pending Addons */}
                   {trackedOrder.pendingAddons?.filter((a) => a.status === "pending").map((addon, aIdx) => (
-                    <div key={aIdx} className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-300">
-                      <div className="font-bold flex items-center gap-1">
+                    <div key={aIdx} className="p-2 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-900">
+                      <div className="font-bold flex items-center gap-1 text-amber-800">
                         <Clock className="w-3 h-3 animate-spin" /> Additional Items Pending Approval:
                       </div>
                       {addon.items?.map((adItem, i) => (
-                        <div key={i} className="flex justify-between text-slate-300 ml-2 mt-0.5">
+                        <div key={i} className="flex justify-between text-slate-700 ml-2 mt-0.5">
                           <span>{adItem.quantity}x {adItem.name}</span>
                           <span>₹{adItem.price * adItem.quantity}</span>
                         </div>
@@ -1119,9 +1145,9 @@ export default function PublicGuestPortal() {
                   ))}
                 </div>
 
-                <div className="border-t border-slate-800 pt-2.5 flex items-center justify-between">
-                  <span className="text-xs text-slate-400">Total Bill Amount:</span>
-                  <span className="text-sm font-black text-amber-400">₹{trackedOrder.grandTotal}</span>
+                <div className="border-t border-slate-200 pt-2.5 flex items-center justify-between">
+                  <span className="text-xs text-slate-500">Total Bill Amount:</span>
+                  <span className="text-sm font-black text-amber-600">₹{trackedOrder.grandTotal}</span>
                 </div>
 
                 {/* Action button: Order more items */}
@@ -1138,7 +1164,7 @@ export default function PublicGuestPortal() {
                       showConfirmButton: false,
                     });
                   }}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 hover:opacity-90 active:scale-98 transition-all"
+                  className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-98 transition-all"
                 >
                   <Plus className="w-4 h-4" />
                   <span>+ Order More Food for This Table</span>
@@ -1155,7 +1181,7 @@ export default function PublicGuestPortal() {
           <div className="max-w-xl mx-auto">
             <button
               onClick={() => setIsCartOpen(true)}
-              className="w-full p-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 shadow-2xl shadow-amber-500/30 flex items-center justify-between font-black transition-all hover:scale-[1.01] active:scale-[0.99]"
+              className="w-full p-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-xl shadow-amber-500/25 flex items-center justify-between font-black transition-all hover:scale-[1.01] active:scale-[0.99]"
             >
               <div className="flex items-center gap-2.5">
                 <span className="w-7 h-7 rounded-full bg-slate-950 text-amber-400 flex items-center justify-center text-xs font-black">
@@ -1168,7 +1194,7 @@ export default function PublicGuestPortal() {
 
               <div className="flex items-center gap-2">
                 <span className="text-sm font-black">₹{grandTotal}</span>
-                <span className="text-xs px-2 py-1 bg-slate-950/20 rounded-lg flex items-center gap-1 font-bold">
+                <span className="text-xs px-2.5 py-1 bg-slate-950/15 rounded-lg flex items-center gap-1 font-bold">
                   View Cart <ChevronRight className="w-3.5 h-3.5" />
                 </span>
               </div>
@@ -1179,21 +1205,21 @@ export default function PublicGuestPortal() {
 
       {/* Cart Drawer / Bottom Sheet Modal */}
       {isCartOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex flex-col justify-end">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex flex-col justify-end">
           <div
-            className="w-full max-w-xl mx-auto bg-slate-900 border-t border-teal-800/40 rounded-t-3xl max-h-[90vh] flex flex-col shadow-2xl animate-fade-in"
+            className="w-full max-w-xl mx-auto bg-white border-t border-slate-200 rounded-t-3xl max-h-[90vh] flex flex-col shadow-2xl animate-fade-in"
           >
             {/* Modal Header */}
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+            <div className="p-4 border-b border-slate-200 flex items-center justify-between">
               <div>
-                <h3 className="font-extrabold text-white text-base">Your Order Summary</h3>
-                <p className="text-xs text-amber-400 font-semibold mt-0.5">
+                <h3 className="font-extrabold text-slate-900 text-base">Your Order Summary</h3>
+                <p className="text-xs text-amber-600 font-semibold mt-0.5">
                   {activeTab === "parcel" ? "Takeaway / Parcel" : `Dining at Table ${selectedTable || "Unassigned"}`}
                 </p>
               </div>
               <button
                 onClick={() => setIsCartOpen(false)}
-                className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white"
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1206,30 +1232,30 @@ export default function PublicGuestPortal() {
                 {Object.values(cart).map((item) => (
                   <div
                     key={item.dish._id}
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-xs"
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs"
                   >
                     <div className="flex-1 min-w-0 pr-2">
-                      <p className="font-bold text-slate-200 truncate">{item.dish.name}</p>
-                      <p className="text-slate-400 mt-0.5">₹{item.dish.price} each</p>
+                      <p className="font-bold text-slate-900 truncate">{item.dish.name}</p>
+                      <p className="text-slate-500 mt-0.5">₹{item.dish.price} each</p>
                     </div>
 
-                    <div className="flex items-center bg-slate-800 rounded-lg px-2 py-1 font-bold text-white">
+                    <div className="flex items-center bg-white border border-slate-300 rounded-lg px-2 py-1 font-bold text-slate-900 shadow-sm">
                       <button
                         onClick={() => removeFromCart(item.dish._id)}
-                        className="p-1 hover:text-amber-400"
+                        className="p-1 hover:text-amber-600"
                       >
                         <Minus className="w-3 h-3" />
                       </button>
                       <span className="px-2 font-black">{item.quantity}</span>
                       <button
                         onClick={() => addToCart(item.dish)}
-                        className="p-1 hover:text-amber-400"
+                        className="p-1 hover:text-amber-600"
                       >
                         <Plus className="w-3 h-3" />
                       </button>
                     </div>
 
-                    <span className="font-black text-amber-400 pl-3 w-16 text-right">
+                    <span className="font-black text-amber-600 pl-3 w-16 text-right">
                       ₹{item.dish.price * item.quantity}
                     </span>
                   </div>
@@ -1237,8 +1263,8 @@ export default function PublicGuestPortal() {
               </div>
 
               {/* Customer Info Form */}
-              <div className="p-3.5 bg-slate-950/70 border border-slate-800 rounded-2xl flex flex-col gap-3">
-                <p className="text-xs font-bold text-slate-300">Customer Details (for bill & KOT verification):</p>
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col gap-3">
+                <p className="text-xs font-bold text-slate-800">Customer Details (for bill & KOT verification):</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <input
                     type="text"
@@ -1246,7 +1272,7 @@ export default function PublicGuestPortal() {
                     placeholder="Your Name *"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                    className="bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 shadow-sm"
                   />
                   <input
                     type="tel"
@@ -1254,17 +1280,17 @@ export default function PublicGuestPortal() {
                     placeholder="Mobile Number (Mandatory) *"
                     value={customerMobile}
                     onChange={(e) => setCustomerMobile(e.target.value)}
-                    className="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                    className="bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 shadow-sm"
                   />
                 </div>
 
                 {activeTab === "dine_in" && (
                   <div>
-                    <label className="text-[11px] text-slate-400 font-semibold mb-1 block">Confirm Table:</label>
+                    <label className="text-[11px] text-slate-600 font-semibold mb-1 block">Confirm Table:</label>
                     <select
                       value={selectedTable}
                       onChange={(e) => setSelectedTable(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-amber-400 font-bold focus:outline-none focus:border-amber-500"
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 font-bold focus:outline-none focus:border-amber-500 shadow-sm"
                     >
                       <option value="">-- Select Table --</option>
                       {tables.map((t) => (
@@ -1278,21 +1304,21 @@ export default function PublicGuestPortal() {
               </div>
 
               {/* Payment Mode Selector */}
-              <div className="p-3.5 bg-slate-950/70 border border-slate-800 rounded-2xl">
-                <p className="text-xs font-bold text-slate-300 mb-2">Choose Payment Method:</p>
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl">
+                <p className="text-xs font-bold text-slate-800 mb-2">Choose Payment Method:</p>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setPaymentMode("Counter")}
                     className={`p-2.5 rounded-xl border flex flex-col items-center justify-center gap-1.5 transition-all text-xs ${
                       paymentMode === "Counter"
-                        ? "bg-amber-500/10 border-amber-500 text-amber-400 font-bold"
-                        : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
+                        ? "bg-amber-50 border-amber-500 text-amber-800 font-bold shadow-sm"
+                        : "bg-white border-slate-200 text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     <Banknote className="w-5 h-5" />
                     <span>Pay at Counter</span>
-                    <span className="text-[10px] opacity-70">Cash/UPI later</span>
+                    <span className="text-[10px] text-slate-500">Cash/UPI later</span>
                   </button>
 
                   <button
@@ -1300,40 +1326,40 @@ export default function PublicGuestPortal() {
                     onClick={() => setPaymentMode("Online")}
                     className={`p-2.5 rounded-xl border flex flex-col items-center justify-center gap-1.5 transition-all text-xs ${
                       paymentMode === "Online"
-                        ? "bg-amber-500/10 border-amber-500 text-amber-400 font-bold"
-                        : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
+                        ? "bg-amber-50 border-amber-500 text-amber-800 font-bold shadow-sm"
+                        : "bg-white border-slate-200 text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     <CreditCard className="w-5 h-5" />
                     <span>Pay Online</span>
-                    <span className="text-[10px] opacity-70">UPI / Card (Razorpay)</span>
+                    <span className="text-[10px] text-slate-500">UPI / Card (Razorpay)</span>
                   </button>
                 </div>
               </div>
 
               {/* Bill Breakdown */}
-              <div className="p-3.5 bg-slate-950/40 border border-slate-800 rounded-2xl flex flex-col gap-1.5 text-xs">
-                <div className="flex justify-between text-slate-400">
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col gap-1.5 text-xs">
+                <div className="flex justify-between text-slate-600">
                   <span>Subtotal</span>
                   <span>₹{subTotal}</span>
                 </div>
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between text-slate-600">
                   <span>Food GST ({gstRate}%)</span>
                   <span>₹{taxAmount}</span>
                 </div>
-                <div className="border-t border-slate-800 pt-1.5 mt-1 flex justify-between font-extrabold text-sm text-white">
+                <div className="border-t border-slate-200 pt-1.5 mt-1 flex justify-between font-extrabold text-sm text-slate-900">
                   <span>Grand Total</span>
-                  <span className="text-amber-400">₹{grandTotal}</span>
+                  <span className="text-amber-600 font-black">₹{grandTotal}</span>
                 </div>
               </div>
             </div>
 
             {/* Modal Bottom CTA */}
-            <div className="p-4 border-t border-slate-800 bg-slate-950">
+            <div className="p-4 border-t border-slate-200 bg-white">
               <button
                 onClick={handlePlaceOrder}
                 disabled={submittingOrder}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 font-black text-sm tracking-wide shadow-xl shadow-amber-500/20 hover:opacity-95 active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-sm tracking-wide shadow-lg shadow-amber-500/20 active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {submittingOrder ? (
                   <>

@@ -90,7 +90,7 @@ const invoiceSchema = new mongoose.Schema(
     },
     paymentMode: {
       type: String,
-      enum: ['Cash', 'Card', 'UPI', 'NC Bill', 'Credit Bill'],
+      enum: ['Cash', 'Card', 'UPI', 'NC Bill', 'Credit Bill', 'Room Charge'],
       default: 'Cash'
     }
   },

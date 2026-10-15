@@ -21,7 +21,7 @@ import {
   Check,
 } from "lucide-react";
 import QRCode from "qrcode";
-import { qrOrderAPI } from "../../api";
+import { qrOrderAPI, tableAPI } from "../../api";
 import Swal from "sweetalert2";
 
 export default function AdminQrOrders() {
@@ -65,6 +65,7 @@ export default function AdminQrOrders() {
   // Bookings state
   const [bookings, setBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
+  const [tables, setTables] = useState([]);
 
   // Standee print ref
   const standeeRef = useRef(null);
@@ -134,9 +135,24 @@ export default function AdminQrOrders() {
     }
   };
 
+  const fetchTablesList = async () => {
+    try {
+      const res = await tableAPI.getTables();
+      const tableArray = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      setTables(tableArray);
+    } catch (err) {
+      console.error("Error fetching tables list:", err);
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
+    fetchTablesList();
   }, [filterStatus]);
+
+  useEffect(() => {
+    fetchTablesList();
+  }, []);
 
   // Real-time SSE Connection: Listens for instant order push from backend
   useEffect(() => {
@@ -204,6 +220,7 @@ export default function AdminQrOrders() {
   useEffect(() => {
     if (activeTab === "bookings") {
       fetchBookings();
+      fetchTablesList();
     }
   }, [activeTab]);
 
@@ -351,13 +368,13 @@ export default function AdminQrOrders() {
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 border border-lagoon-700/25 p-5 rounded-3xl backdrop-blur-md shadow-xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 dark:bg-slate-900/60 border border-lagoon-700/25 p-5 rounded-3xl backdrop-blur-md shadow-xl">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-saffron-500 to-amber-600 flex items-center justify-center text-slate-950 shadow-md shadow-saffron-500/20">
             <QrCode className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-amber-500 tracking-tight flex items-center gap-2">
               Scan & Order System
               {pendingCount > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-xs font-black bg-rose-500 text-white animate-pulse">
@@ -549,11 +566,11 @@ export default function AdminQrOrders() {
 
                       {/* Customer Info */}
                       <div className="py-3 border-b border-slate-800/80 text-xs">
-                        <p className="text-slate-300 font-bold truncate">
-                          Guest: <span className="text-white">{order.customerName || "Walk-in Guest"}</span>
+                        <p className="text-slate-400 font-bold truncate">
+                          Guest: <span className="text-slate-900 dark:text-white font-extrabold">{order.customerName || "Walk-in Guest"}</span>
                         </p>
                         {order.customerMobile && (
-                          <p className="text-slate-400 mt-0.5">Contact: {order.customerMobile}</p>
+                          <p className="text-slate-500 dark:text-slate-400 mt-0.5">Contact: {order.customerMobile}</p>
                         )}
                         <div className="flex items-center gap-2 mt-1.5">
                           <span
@@ -919,14 +936,31 @@ export default function AdminQrOrders() {
                   {bookings.map((b) => (
                     <tr key={b._id} className="hover:bg-slate-800/40 transition-colors">
                       <td className="py-3 px-4">
-                        <p className="font-bold text-white">{b.customerName}</p>
-                        <p className="text-[11px] text-slate-400">{b.customerMobile}</p>
+                        <p className="font-bold text-slate-900 dark:text-white">{b.customerName}</p>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400">{b.customerMobile}</p>
                       </td>
                       <td className="py-3 px-4 font-semibold text-amber-400">
                         {b.bookingDate} at {b.bookingTime}
                       </td>
                       <td className="py-3 px-4 font-bold">{b.guestsCount} People</td>
-                      <td className="py-3 px-4">{b.tableNo ? `Table ${b.tableNo}` : "Any Table"}</td>
+                      <td className="py-3 px-4">
+                        <select
+                          value={b.tableNo || ""}
+                          onChange={async (e) => {
+                            const newTableNo = e.target.value;
+                            await qrOrderAPI.updateTableBooking(b._id, { tableNo: newTableNo });
+                            fetchBookings();
+                          }}
+                          className="bg-slate-900 border border-slate-750 text-amber-400 font-bold text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-amber-500"
+                        >
+                          <option value="">-- Table --</option>
+                          {tables.map((t) => (
+                            <option key={t._id} value={t.tableNo}>
+                              Table {t.tableNo}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
                       <td className="py-3 px-4 max-w-xs truncate text-slate-400">{b.specialRequests || "None"}</td>
                       <td className="py-3 px-4">
                         <span

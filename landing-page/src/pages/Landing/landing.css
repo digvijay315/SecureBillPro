@@ -1,26 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Jost:wght@300;400;500;600;700&display=swap');
 
 .landing-scope {
-  --background: oklch(0.982 0.008 85);
-  --foreground: oklch(0.22 0.02 160);
-  --card: oklch(0.995 0.005 85);
-  --card-foreground: oklch(0.22 0.02 160);
-  --primary: oklch(0.28 0.045 158);
-  --primary-foreground: oklch(0.97 0.015 85);
-  --secondary: oklch(0.945 0.015 85);
-  --secondary-foreground: oklch(0.28 0.045 158);
-  --muted: oklch(0.945 0.012 85);
-  --muted-foreground: oklch(0.5 0.02 155);
-  --border: oklch(0.89 0.015 85);
-  --input: oklch(0.89 0.015 85);
-  --gold: oklch(0.74 0.105 83);
-  --gold-soft: oklch(0.88 0.055 88);
-  --ink: oklch(0.21 0.032 158);
-  --ink-foreground: oklch(0.96 0.012 85);
+  /* Crisp, radiant luxury light palette */
+  --background: #FFFFFF;
+  --foreground: #0F172A; /* Slate-900 */
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --primary: #0A2F2F; /* Deep Lagoon */
+  --primary-foreground: #FFFFFF;
+  --secondary: #F8FAF9; /* Soft serene linen/lagoon-50 */
+  --secondary-foreground: #0A2F2F;
+  --muted: #F1F5F4;
+  --muted-foreground: #475569; /* Slate-600 */
+  --border: #E2E8F0;
+  --input: #CBD5E1;
+  --gold: #BA8551; /* Warm saffron gold */
+  --gold-soft: #D4A373;
+  --ink: #0F172A; /* Deep dark slate for dark text */
+  --ink-foreground: #F8FAFC; /* Light text on dark accents */
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
   --tracking-luxe: 0.28em;
-  --shadow-luxe: 0 30px 70px -35px oklch(0.21 0.032 158 / 0.45);
+  --shadow-luxe: 0 20px 45px -15px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
   
   background-color: var(--background) !important;
   color: var(--foreground) !important;
@@ -31,25 +32,60 @@
 .landing-scope .font-display,
 .landing-scope h1, .landing-scope h2, .landing-scope h3, .landing-scope h4 {
   font-family: var(--font-display) !important;
-  font-weight: 300 !important;
+  font-weight: 400 !important;
 }
 
 .landing-scope .eyebrow {
   font-family: var(--font-sans);
   font-size: 0.68rem;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: var(--tracking-luxe);
   text-transform: uppercase;
   color: var(--gold);
 }
 
+/* Light, pristine aesthetic for surface-ink in light theme */
 .landing-scope .surface-ink {
-  background-image: linear-gradient(180deg, oklch(0.21 0.032 158) 0%, oklch(0.17 0.028 160) 100%);
-  color: var(--ink-foreground);
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8FAF9 100%) !important;
+  color: #0F172A !important;
+  border-color: #E2E8F0 !important;
 }
 
+/* Ensure text inside light surface-ink stays dark and readable */
+.landing-scope .surface-ink h1,
+.landing-scope .surface-ink h2,
+.landing-scope .surface-ink h3,
+.landing-scope .surface-ink h4 {
+  color: #0A2F2F !important;
+}
+
+.landing-scope .surface-ink .text-ink-foreground,
+.landing-scope .surface-ink .text-ink-foreground\/80,
+.landing-scope .surface-ink .text-ink-foreground\/75,
+.landing-scope .surface-ink .text-ink-foreground\/70,
+.landing-scope .surface-ink .text-ink-foreground\/60,
+.landing-scope .surface-ink .text-ink-foreground\/50 {
+  color: #475569 !important;
+}
+
+.landing-scope .surface-ink .border-ink-foreground\/40 {
+  border-color: rgba(186, 133, 81, 0.4) !important;
+  color: #0A2F2F !important;
+}
+
+.landing-scope .surface-ink .border-ink-foreground\/40:hover {
+  border-color: var(--gold) !important;
+  color: var(--gold) !important;
+}
+
+/* Light and clear hero overlay so bright background stays readable */
 .landing-scope .hero-overlay {
-  background-image: linear-gradient(180deg, oklch(0.15 0.03 160 / 0.55) 0%, oklch(0.15 0.03 160 / 0.35) 45%, oklch(0.15 0.03 160 / 0.85) 100%);
+  background: linear-gradient(
+    180deg, 
+    rgba(15, 23, 42, 0.45) 0%, 
+    rgba(15, 23, 42, 0.30) 40%, 
+    rgba(10, 47, 47, 0.70) 100%
+  ) !important;
 }
 
 .landing-scope .shadow-luxe {
@@ -76,68 +112,125 @@
 
 /* Color mappings */
 .landing-scope .bg-background { background-color: var(--background) !important; }
-.landing-scope .bg-card { background-color: var(--card) !important; }
+.landing-scope .bg-card { 
+  background-color: var(--card) !important; 
+  border-color: #E2E8F0 !important;
+}
 .landing-scope .bg-primary { background-color: var(--primary) !important; }
 .landing-scope .bg-gold { background-color: var(--gold) !important; }
-.landing-scope .bg-secondary\/60 { background-color: oklch(0.945 0.015 85 / 0.6) !important; }
+.landing-scope .bg-secondary\/60 { background-color: rgba(248, 250, 249, 0.85) !important; }
 
-.landing-scope .text-ink-foreground { color: var(--ink-foreground) !important; }
-.landing-scope .text-ink-foreground\/80 { color: oklch(0.96 0.012 85 / 0.8) !important; }
-.landing-scope .text-ink-foreground\/75 { color: oklch(0.96 0.012 85 / 0.75) !important; }
-.landing-scope .text-ink-foreground\/70 { color: oklch(0.96 0.012 85 / 0.7) !important; }
-.landing-scope .text-ink-foreground\/60 { color: oklch(0.96 0.012 85 / 0.6) !important; }
-.landing-scope .text-ink-foreground\/50 { color: oklch(0.96 0.012 85 / 0.5) !important; }
-.landing-scope .text-ink-foreground\/40 { color: oklch(0.96 0.012 85 / 0.4) !important; }
+/* Text colors on dark hero background */
+.landing-scope .hero-overlay ~ * .text-ink-foreground,
+.landing-scope .relative.z-10 .text-ink-foreground {
+  color: #F8FAFC !important;
+}
+.landing-scope .hero-overlay ~ * .text-ink-foreground\/80,
+.landing-scope .relative.z-10 .text-ink-foreground\/80 {
+  color: rgba(248, 250, 252, 0.9) !important;
+}
+.landing-scope .hero-overlay ~ * .border-ink-foreground\/40,
+.landing-scope .relative.z-10 .border-ink-foreground\/40 {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: #FFFFFF !important;
+}
 
-.landing-scope .text-ink { color: var(--ink) !important; }
+.landing-scope .text-ink-foreground { color: var(--foreground) !important; }
+.landing-scope .text-ink-foreground\/80 { color: #334155 !important; }
+.landing-scope .text-ink-foreground\/75 { color: #475569 !important; }
+.landing-scope .text-ink-foreground\/70 { color: #475569 !important; }
+.landing-scope .text-ink-foreground\/60 { color: #64748B !important; }
+.landing-scope .text-ink-foreground\/50 { color: #94A3B8 !important; }
+.landing-scope .text-ink-foreground\/40 { color: #94A3B8 !important; }
+
+.landing-scope .text-ink { color: #0F172A !important; }
 .landing-scope .text-gold { color: var(--gold) !important; }
-.landing-scope .text-gold-soft\/80 { color: oklch(0.88 0.055 88 / 0.8) !important; }
-.landing-scope .text-muted-foreground { color: var(--muted-foreground) !important; }
+.landing-scope .text-gold-soft\/80 { color: #B4783E !important; }
+.landing-scope .text-muted-foreground { color: #475569 !important; }
 .landing-scope .text-primary { color: var(--primary) !important; }
-.landing-scope .text-primary-foreground { color: var(--primary-foreground) !important; }
+.landing-scope .text-primary-foreground { color: #FFFFFF !important; }
 
-.landing-scope .border-border { border-color: var(--border) !important; }
-.landing-scope .border-border\/20 { border-color: oklch(0.89 0.015 85 / 0.2) !important; }
-.landing-scope .border-border\/15 { border-color: oklch(0.89 0.015 85 / 0.15) !important; }
-.landing-scope .border-border\/10 { border-color: oklch(0.89 0.015 85 / 0.1) !important; }
+.landing-scope .border-border { border-color: #E2E8F0 !important; }
+.landing-scope .border-border\/20 { border-color: rgba(226, 232, 240, 0.8) !important; }
+.landing-scope .border-border\/15 { border-color: rgba(226, 232, 240, 0.6) !important; }
+.landing-scope .border-border\/10 { border-color: rgba(226, 232, 240, 0.4) !important; }
 .landing-scope .border-gold { border-color: var(--gold) !important; }
-.landing-scope .border-gold\/60 { border-color: oklch(0.74 0.105 83 / 0.6) !important; }
-.landing-scope .border-gold\/50 { border-color: oklch(0.74 0.105 83 / 0.5) !important; }
-.landing-scope .border-input { border-color: var(--input) !important; }
-.landing-scope .border-ink-foreground\/40 { border-color: oklch(0.96 0.012 85 / 0.4) !important; }
+.landing-scope .border-gold\/60 { border-color: rgba(186, 133, 81, 0.6) !important; }
+.landing-scope .border-gold\/50 { border-color: rgba(186, 133, 81, 0.5) !important; }
+.landing-scope .border-input { border-color: #CBD5E1 !important; }
+.landing-scope .border-ink-foreground\/40 { border-color: rgba(15, 23, 42, 0.3) !important; }
 
 .landing-scope .hover\:text-gold:hover { color: var(--gold) !important; }
 .landing-scope .hover\:bg-gold:hover { background-color: var(--gold) !important; }
-.landing-scope .hover\:text-ink:hover { color: var(--ink) !important; }
+.landing-scope .hover\:text-ink:hover { color: #0F172A !important; }
 .landing-scope .hover\:border-gold:hover { border-color: var(--gold) !important; }
 .landing-scope .hover\:text-primary:hover { color: var(--primary) !important; }
 .landing-scope .focus\:border-gold:focus { border-color: var(--gold) !important; }
+
+/* Light Theme Navigation Header styling */
+.landing-scope header.bg-transparent {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6) !important;
+}
+
+.landing-scope header.surface-ink {
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05) !important;
+}
+
+.landing-scope header .text-ink-foreground\/75,
+.landing-scope header .text-ink-foreground\/80 {
+  color: #334155 !important;
+}
+
+.landing-scope header .text-ink-foreground {
+  color: #0F172A !important;
+}
+
+/* Light Theme Footer styling */
+.landing-scope footer.surface-ink {
+  background: #F8FAF9 !important;
+  border-top: 1px solid #E2E8F0 !important;
+  color: #0F172A !important;
+}
 
 /* Modal Form Input Styling - Ensure typed text is crisp black */
 .landing-scope .register-modal-input,
 .landing-scope input.register-modal-input,
 .landing-scope select.register-modal-input,
 .landing-scope textarea.register-modal-input {
-  background-color: #ffffff !important;
-  color: #0f172a !important; /* Rich clear dark/black */
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
   border-color: rgba(186, 133, 81, 0.35) !important;
 }
 
 .landing-scope .register-modal-input:focus,
 .landing-scope input.register-modal-input:focus,
 .landing-scope select.register-modal-input:focus {
-  background-color: #ffffff !important;
+  background-color: #FFFFFF !important;
   color: #000000 !important;
-  border-color: #ba8551 !important;
+  border-color: #BA8551 !important;
   outline: none !important;
-  box-shadow: 0 0 0 1px #ba8551 !important;
+  box-shadow: 0 0 0 1px #BA8551 !important;
 }
 
 .landing-scope .register-modal-input::placeholder {
-  color: #94a3b8 !important;
+  color: #94A3B8 !important;
 }
 
 .landing-scope select.register-modal-input option {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
+/* Modal Header and Container Light styling */
+.landing-scope .surface-ink.border {
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  color: #0F172A !important;
 }

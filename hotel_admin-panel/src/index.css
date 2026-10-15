@@ -165,6 +165,7 @@ body.light {
   color: #151D1A !important;
 }
 
+body.light .text-white,
 body.light .text-slate-100,
 body.light .text-slate-200 {
   color: #151D1A !important;

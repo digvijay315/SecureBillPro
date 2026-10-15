@@ -84,7 +84,7 @@ const Pricing = ({ onOpenRegister }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mt-6 max-w-xl text-sm leading-relaxed text-ink/70"
+            className="mt-6 max-w-xl text-sm leading-relaxed text-ink-foreground/80"
           >
             No hidden fees. No surprise charges. Just powerful software to grow your business.
           </motion.p>

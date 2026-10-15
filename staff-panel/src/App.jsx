@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 
 // Pages
 import Login from "./pages/Login";
+import StaffDashboard from "./pages/staff/StaffDashboard";
 import StaffBilling from "./pages/staff/StaffBilling";
 import StaffRoomBooking from "./pages/staff/StaffRoomBooking";
 import StaffKotBilling from "./pages/staff/StaffKotBilling";
@@ -46,6 +47,22 @@ export default function App() {
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
+
+  useEffect(() => {
+    if (currentUser && currentUser.hotelName) {
+      document.title = `${currentUser.hotelName} - Secure Bill Pro Staff`;
+    } else {
+      document.title = "Secure Bill Pro - Staff Desk";
+    }
+
+    if (currentUser && currentUser.logo) {
+      const link = document.querySelector("link[rel*='icon']") || document.createElement("link");
+      link.type = "image/x-icon";
+      link.rel = "shortcut icon";
+      link.href = currentUser.logo;
+      document.getElementsByTagName("head")[0].appendChild(link);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -99,13 +116,20 @@ export default function App() {
           }
         />
 
+        {/* Staff Dashboard - Central Operations Hub */}
         <Route
           path="/staff"
           element={
             <StaffRoute currentUser={currentUser} handleLogout={handleLogout} theme={theme} toggleTheme={toggleTheme}>
-              <StaffBilling />
+              <StaffDashboard currentUser={currentUser} theme={theme} />
             </StaffRoute>
           }
+        />
+
+        {/* Restaurant route now redirects to KOT where Room Guest & Parcel features live */}
+        <Route
+          path="/staff/restaurant"
+          element={<Navigate to="/staff/kot" replace />}
         />
 
         <Route

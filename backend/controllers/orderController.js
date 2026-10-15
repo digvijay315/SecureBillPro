@@ -70,6 +70,9 @@ exports.createOrUpdateOrder = async (req, res) => {
           order.subTotal = subTotal;
           order.tax = tax;
           order.grandTotal = grandTotal;
+          if (req.body.roomBookingId) {
+            order.roomBookingId = req.body.roomBookingId;
+          }
           await order.save();
         }
       } else {
@@ -78,13 +81,15 @@ exports.createOrUpdateOrder = async (req, res) => {
         let prefix = "PAR";
         if (type === "Swiggy") prefix = "SW";
         if (type === "Zomato") prefix = "ZOM";
+        if (type === "Room Service") prefix = "ROOM";
         
-        const displayId = `${prefix}-${count + 1}`;
+        const displayId = req.body.orderDisplayId || `${prefix}-${count + 1}`;
         
         order = await Order.create({
           hotelId: req.user.hotelId,
           orderType: type,
           orderDisplayId: displayId,
+          roomBookingId: req.body.roomBookingId || null,
           items,
           subTotal,
           tax,
@@ -143,7 +148,7 @@ exports.getActiveVirtualOrders = async (req, res) => {
 // @access  Private
 exports.checkoutOrder = async (req, res) => {
   try {
-    const { customerName, customerMobile, customerEmail, paymentMode, discountPercentage = 0 } = req.body;
+    const { customerName, customerMobile, customerEmail, paymentMode, discountPercentage = 0, roomBookingId } = req.body;
     
     const order = await Order.findOne({ _id: req.params.orderId, hotelId: req.user.hotelId }).populate("table");
     if (!order) {
@@ -166,13 +171,18 @@ exports.checkoutOrder = async (req, res) => {
     const newTax = Math.round(((order.subTotal - discountAmount) * 0.05) * 100) / 100;
     const newGrandTotal = Math.round((order.subTotal - discountAmount + newTax) * 100) / 100;
 
+    let invoiceStatus = "Paid";
+    if (roomBookingId) {
+      invoiceStatus = "Added to Room";
+    }
+
     // Create Invoice
     const invoice = await Invoice.create({
       hotelId: req.user.hotelId,
       customerName: cName,
       customerMobile: customerMobile || "N/A",
       customerEmail: customerEmail || "",
-      paymentMode: paymentMode || "Cash",
+      paymentMode: roomBookingId ? "Room Charge" : (paymentMode || "Cash"),
       items: order.items,
       subTotal: order.subTotal,
       discountPercentage,
@@ -182,12 +192,21 @@ exports.checkoutOrder = async (req, res) => {
       createdBy: req.user._id,
       tableId: order.table ? order.table._id : null,
       orderId: order._id,
-      status: "Paid",
+      roomBookingId: roomBookingId || null,
+      status: invoiceStatus,
     });
+
+    if (roomBookingId) {
+      const RoomBooking = require("../models/RoomBooking");
+      await RoomBooking.findOneAndUpdate(
+        { _id: roomBookingId },
+        { $push: { restaurantBills: invoice._id } }
+      );
+    }
 
     // Update Order
     order.status = "Billed";
-    order.paymentMode = paymentMode || "Cash";
+    order.paymentMode = roomBookingId ? "Room Charge" : (paymentMode || "Cash");
     order.customerName = cName;
     order.discountPercentage = discountPercentage;
     order.discountAmount = discountAmount;

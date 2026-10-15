@@ -100,14 +100,18 @@ export default function ThermalReceipt({ invoice, onClose, isKot = false }) {
       </div>
 
       <div className="border-b border-black border-dashed pb-1 mb-1">
-        {invoice.items && invoice.items.map((item, i) => (
-          <div key={i} className="flex justify-between mb-1">
-            <div className={`w-[45%] break-words pr-1 ${isKot ? 'w-[70%]' : ''}`}>{item.name}</div>
-            <div className={`w-[15%] text-center font-bold ${isKot ? 'w-[30%] text-right text-base' : ''}`}>{(item.quantity).toFixed(3)}</div>
-            {!isKot && <div className="w-[20%] text-right">{(item.price).toFixed(2)}</div>}
-            {!isKot && <div className="w-[20%] text-right">{(item.price * item.quantity).toFixed(2)}</div>}
-          </div>
-        ))}
+        {invoice.items && invoice.items.map((item, i) => {
+          const qty = Number(item.quantity) || 1;
+          const price = Number(item.price) || 0;
+          return (
+            <div key={i} className="flex justify-between mb-1">
+              <div className={`w-[45%] break-words pr-1 ${isKot ? 'w-[70%]' : ''}`}>{item.name}</div>
+              <div className={`w-[15%] text-center font-bold ${isKot ? 'w-[30%] text-right text-base' : ''}`}>{qty}</div>
+              {!isKot && <div className="w-[20%] text-right">{price.toFixed(2)}</div>}
+              {!isKot && <div className="w-[20%] text-right">{(price * qty).toFixed(2)}</div>}
+            </div>
+          );
+        })}
       </div>
 
       {!isKot && (
@@ -221,64 +225,66 @@ export default function ThermalReceipt({ invoice, onClose, isKot = false }) {
         </button>
       </div>
 
-      <div className="w-[300px] bg-white p-4 font-mono text-sm leading-tight text-black print:w-[80mm] print:m-0 print:p-0">
+      <div className="receipt-print-area w-[300px] bg-white p-4 font-mono text-sm leading-tight text-black print:w-[80mm] print:m-0 print:p-2">
         <ReceiptContent />
       </div>
 
       {/* Global styles for print format */}
       <style>{`
         @media print {
+          @page {
+            margin: 0 !important;
+            size: auto;
+          }
           html, body {
             margin: 0 !important;
             padding: 0 !important;
             background: white !important;
-          }
-          @page {
-            margin: 0px !important;
-            padding: 0px !important;
+            color: black !important;
+            height: auto !important;
+            overflow: visible !important;
           }
           
-          /* Reset everything that might trap fixed positioning */
-          * {
-            transform: none !important;
-            animation: none !important;
-            transition: none !important;
-            backdrop-filter: none !important;
+          /* Hide everything in the document by default */
+          body > #root {
+            visibility: hidden !important;
           }
 
-          /* Completely remove Navbar and Sidebar from layout flow */
-          nav, aside, .no-print {
-            display: none !important;
-          }
-
-          /* Hide other elements visually */
-          body * {
-            visibility: hidden;
-          }
-
-          /* Reset root containers so they don't add padding or heights */
-          #root, 
-          #root > div, 
-          #root > div > div {
-            position: static !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            height: auto !important;
-            min-height: 0 !important;
-          }
-
-          /* Unhide the receipt and lock it to the absolute top of the page */
-          .print-receipt-wrapper, .print-receipt-wrapper * {
-            visibility: visible;
-          }
+          /* Specifically make print-receipt-wrapper visible and position at top left */
           .print-receipt-wrapper {
-            position: fixed !important;
+            visibility: visible !important;
+            position: absolute !important;
             left: 0 !important;
             top: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
             width: 100% !important;
             background: white !important;
+            z-index: 999999 !important;
+            display: block !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+          }
+
+          .print-receipt-wrapper * {
+            visibility: visible !important;
+          }
+
+          .receipt-print-area {
+            width: 80mm !important;
+            max-width: 80mm !important;
+            margin: 0 auto !important;
+            padding: 4mm !important;
+            background: white !important;
+            color: black !important;
+            display: block !important;
+          }
+
+          .no-print,
+          .swal2-container,
+          .swal2-backdrop,
+          .swal2-popup {
+            display: none !important;
+            visibility: hidden !important;
           }
         }
       `}</style>

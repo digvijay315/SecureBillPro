@@ -14,8 +14,13 @@ const orderSchema = new mongoose.Schema(
     },
     orderType: {
       type: String,
-      enum: ["Table", "Swiggy", "Zomato", "Parcel"],
+      enum: ["Table", "Swiggy", "Zomato", "Parcel", "Room Service"],
       default: "Table",
+    },
+    roomBookingId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "RoomBooking",
+      required: false,
     },
     orderDisplayId: {
       type: String,
