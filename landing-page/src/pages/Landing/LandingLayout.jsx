@@ -59,7 +59,7 @@ function SiteHeader({ onOpenRegister }) {
           ))}
           <div className="flex items-center gap-4">
             <a
-              href="https://www.securebillpro.com/login"
+              href="https://admin.securebillpro.com"
               className="border border-gold/60 px-5 py-2.5 text-[0.7rem] uppercase tracking-[0.22em] text-gold transition-colors hover:bg-gold hover:text-ink"
             >
               Log in
@@ -103,7 +103,7 @@ function SiteHeader({ onOpenRegister }) {
             ))}
             <div className="flex flex-col gap-3 mt-4">
               <a
-                href="https://www.securebillpro.com/login"
+                href="https://admin.securebillpro.com"
                 onClick={() => setOpen(false)}
                 className="text-center border border-gold/60 px-6 py-3 text-[0.7rem] uppercase tracking-[0.22em] text-gold transition-colors"
               >
@@ -154,7 +154,7 @@ function SiteFooter() {
             <Link to="/features" className="hover:text-gold">Features</Link>
             <Link to="/about" className="hover:text-gold">About</Link>
             <Link to="/contact" className="hover:text-gold">Contact</Link>
-            <a href="https://www.securebillpro.com/login" className="hover:text-gold">Log in</a>
+            <a href="https://admin.securebillpro.com" className="hover:text-gold">Log in</a>
           </div>
         </div>
 

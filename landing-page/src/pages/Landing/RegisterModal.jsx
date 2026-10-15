@@ -242,7 +242,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                   <div className="flex flex-wrap items-center justify-center gap-3">
                     <button 
                       type="button"
-                      onClick={() => window.location.href = "http://localhost:5174/login"}
+                      onClick={() => window.location.href = "https://admin.securebillpro.com"}
                       className="px-8 py-3 bg-gold text-ink text-[0.7rem] uppercase tracking-[0.22em] font-semibold transition-opacity hover:opacity-90 shadow-sm"
                     >
                       Login to Hotel Admin Panel

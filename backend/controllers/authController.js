@@ -17,9 +17,18 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const normalizedEmail = (email || '').trim().toLowerCase();
+    const candidateUsers = await User.find({ email: normalizedEmail });
 
-    if (user && (await user.matchPassword(password))) {
+    let user = null;
+    for (const candidate of candidateUsers) {
+      if (await candidate.matchPassword(password)) {
+        user = candidate;
+        break;
+      }
+    }
+
+    if (user) {
       // Get permissions from hotel_admin user if current user is staff
       let permissions = user.staffPermissions;
       if (user.role === 'staff') {
@@ -259,15 +268,22 @@ const registerStaff = async (req, res) => {
   const { name, email, password, mobile, age, address } = req.body;
 
   try {
-    const userExists = await User.findOne({ email });
+    const normalizedEmail = (email || '').trim().toLowerCase();
+    const userExists = await User.findOne({ 
+      hotelId: req.user.hotelId, 
+      email: normalizedEmail 
+    });
 
     if (userExists) {
-      return res.status(400).json({ success: false, message: 'Staff with this email already exists' });
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Staff with this email already exists in your hotel' 
+      });
     }
 
     const staff = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password,
       role: 'staff',
       mobile,

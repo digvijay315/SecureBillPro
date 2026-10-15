@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
+      trim: true,
+      lowercase: true,
     },
     password: {
       type: String,
@@ -54,6 +55,9 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Enforce unique email per hotel (same email allowed across different hotels, but unique within the same hotel)
+userSchema.index({ hotelId: 1, email: 1 }, { unique: true });
 
 // Hash the password before saving
 userSchema.pre("save", async function (next) {
