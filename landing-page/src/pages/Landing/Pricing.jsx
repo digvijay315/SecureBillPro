@@ -8,15 +8,16 @@ const Pricing = ({ onOpenRegister }) => {
   const plans = [
     {
       name: "Free Tier",
-      desc: "Perfect for small boutique hotels & guesthouses.",
+      desc: "Free for 3 days trial. Perfect for boutique hotels & testing.",
       price: "Free",
-      period: "/month",
+      period: "/3 days trial",
       features: [
         "Up to 20 Rooms",
         "Basic POS & Billing",
         "Standard Analytics",
         "Email Support",
-        "2 Staff Accounts"
+        "2 Staff Accounts",
+        "Instant 3-Day Free Access"
       ],
       popular: false
     },
@@ -53,9 +54,9 @@ const Pricing = ({ onOpenRegister }) => {
   ];
 
   const faqs = [
-    { q: "Is there a free trial available?", a: "Yes, we offer a 14-day free trial on all plans. No credit card required." },
+    { q: "Is there a free trial available?", a: "Yes, we offer a 3-day free trial on our Free Tier plan with zero commitment. No credit card required." },
     { q: "Can I upgrade or downgrade my plan later?", a: "Absolutely. You can change your plan at any time from your admin dashboard. Pro-rated charges will apply." },
-    { q: "What kind of support do you offer?", a: "Starter plans get email support (24h response). Professional and Enterprise plans get priority 24/7 phone and chat support." },
+    { q: "What kind of support do you offer?", a: "Free tier plans get email support. Professional and Enterprise plans get priority 24/7 phone and WhatsApp support." },
     { q: "Do you charge setup fees?", a: "No, there are no hidden setup fees. You only pay the monthly subscription price." }
   ];
 
@@ -166,7 +167,7 @@ const Pricing = ({ onOpenRegister }) => {
               <thead>
                 <tr className="border-b border-border/20 bg-card">
                   <th className="p-6 text-[0.75rem] uppercase tracking-[0.15em] text-ink/80 font-normal">Features</th>
-                  <th className="p-6 text-[0.75rem] uppercase tracking-[0.15em] text-ink/80 font-normal text-center">Starter</th>
+                  <th className="p-6 text-[0.75rem] uppercase tracking-[0.15em] text-ink/80 font-normal text-center">Free Tier (3 Days)</th>
                   <th className="p-6 text-[0.75rem] uppercase tracking-[0.15em] text-gold font-normal text-center bg-gold/5">Professional</th>
                   <th className="p-6 text-[0.75rem] uppercase tracking-[0.15em] text-ink/80 font-normal text-center">Enterprise</th>
                 </tr>

@@ -6,6 +6,7 @@ const {
   getSubscriptionStatus,
   createOrder,
   verifyPayment,
+  activateTrial,
   getMyInvoices,
 } = require("../controllers/paymentController");
 
@@ -14,6 +15,7 @@ router.get("/plans", getPlans);
 
 // Protected routes
 router.get("/status", protect, getSubscriptionStatus);
+router.post("/activate-trial", protect, admin, activateTrial);
 router.post("/razorpay/create-order", protect, admin, createOrder);
 router.post("/razorpay/verify", protect, admin, verifyPayment);
 router.get("/my-invoices", protect, admin, getMyInvoices);

@@ -35,49 +35,53 @@ const loadRazorpayScript = () => {
 };
 
 const DEFAULT_PLANS = {
-  Starter: {
-    id: "Starter",
-    name: "Starter",
-    monthlyPrice: 1499,
-    yearlyPrice: 14990,
-    description: "10 rooms tak ke chhote hotel/guest house ke liye",
+  "Free Tier": {
+    id: "Free Tier",
+    name: "Free Tier",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    isFree: true,
+    trialDays: 3,
+    description: "Free for 3 days trial. Perfect for small boutique hotels & guesthouses.",
     features: [
-      "Room booking & Management",
-      "Billing & GST Invoice generation",
-      "Up to 2 Staff accounts",
-      "Reports & Daily revenue stats",
-      "Standard Email Support",
+      "Up to 20 Rooms",
+      "Basic POS & Billing",
+      "Standard Analytics",
+      "Email Support",
+      "2 Staff Accounts",
+      "3-Day Free Trial Period",
     ],
   },
-  Growth: {
-    id: "Growth",
-    name: "Growth",
-    monthlyPrice: 3999,
-    yearlyPrice: 39990,
+  Professional: {
+    id: "Professional",
+    name: "Professional",
+    monthlyPrice: 1499,
+    yearlyPrice: 14990,
     popular: true,
-    description: "Restaurant & Bar wale hotels ke liye complete setup",
+    description: "Ideal for mid-sized hotels with a restaurant.",
     features: [
-      "Starter ka sab kuch",
-      "Restaurant POS & KOT billing",
-      "Kitchen Display (KDS) & QR Ordering",
-      "Up to 10 Staff accounts",
-      "Inventory & Stock tracking",
-      "Priority WhatsApp & Phone Support",
+      "Up to 100 Rooms",
+      "Advanced POS & KOT",
+      "Advanced Analytics & Reports",
+      "Priority 24/7 Support",
+      "Unlimited Staff Accounts",
+      "GST Invoicing",
     ],
   },
   Enterprise: {
     id: "Enterprise",
     name: "Enterprise",
-    monthlyPrice: 9999,
-    yearlyPrice: 99990,
-    description: "Chain aur bade luxury resorts ke liye",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    isCustom: true,
+    description: "For large hotel chains and luxury resorts.",
     features: [
-      "Growth ka sab kuch",
-      "Multi-property management",
-      "Unlimited Staff accounts",
-      "Advanced Analytics & Custom Excel Exports",
-      "24/7 Dedicated Account Manager",
-      "Custom Branding & API access",
+      "Unlimited Rooms",
+      "Multi-Property Management",
+      "Custom API Integrations",
+      "Dedicated Account Manager",
+      "Custom Feature Requests",
+      "On-premise Deployment Option",
     ],
   },
 };
@@ -302,6 +306,77 @@ export default function AdminBilling() {
     }
   };
 
+  const handleActivateTrial = async () => {
+    try {
+      setProcessingPlan("Free Tier");
+      const { data } = await api.post("/api/payment/activate-trial");
+      if (data.success) {
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const updatedUser = {
+          ...storedUser,
+          subscriptionPlan: "Free Tier",
+          subscriptionStatus: "active",
+          subscriptionExpiresAt: data.subscription.validUntil,
+        };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setCurrentUser(updatedUser);
+        setSubscription(data.subscription);
+        window.dispatchEvent(new Event("user-updated"));
+
+        Swal.fire({
+          icon: "success",
+          title: "3-Day Free Trial Activated!",
+          html: `
+            <div class="text-left text-sm space-y-2 mt-2">
+              <p class="font-bold text-emerald-600 text-base">🎉 Free trial is now active!</p>
+              <p><b>Plan:</b> Free Tier (3 Days)</p>
+              <p><b>Valid Until:</b> ${new Date(data.subscription.validUntil).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}</p>
+              <div class="p-3 bg-emerald-50 rounded-lg text-emerald-800 border border-emerald-200 mt-3">
+                <b>Full Access Unlocked:</b> You and your staff can now test all features for the next 3 days.
+              </div>
+            </div>
+          `,
+          confirmButtonText: "Get Started",
+          confirmButtonColor: "#10B981",
+        });
+      }
+    } catch (err) {
+      console.error("Trial activation error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Activation Failed",
+        text: err.response?.data?.message || err.message || "Could not activate free trial.",
+        confirmButtonColor: "#EF4444",
+      });
+    } finally {
+      setProcessingPlan(null);
+    }
+  };
+
+  const handleCustomContact = () => {
+    Swal.fire({
+      title: "Enterprise Custom Plan",
+      html: `
+        <div class="text-left text-sm space-y-3">
+          <p class="text-slate-600">Get a tailored setup for your hotel chain, multiple branches, or custom PMS integrations.</p>
+          <div class="p-3 bg-slate-100 rounded-xl space-y-1.5 text-xs">
+            <p><b>📞 Phone:</b> +91 98765 43210</p>
+            <p><b>✉️ Email:</b> enterprise@securebillpro.com</p>
+            <p><b>💬 WhatsApp:</b> Instant support & onboarding</p>
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Chat on WhatsApp",
+      cancelButtonText: "Close",
+      confirmButtonColor: "#25D366",
+    }).then((res) => {
+      if (res.isConfirmed) {
+        window.open("https://wa.me/919876543210?text=Hi,%20I%20am%20interested%20in%20SecureBillPro%20Enterprise%20Plan.", "_blank");
+      }
+    });
+  };
+
   const isCurrentPlanActive = (planName) => {
     return subscription.isActive && subscription.plan?.toLowerCase() === planName.toLowerCase();
   };
@@ -473,22 +548,47 @@ export default function AdminBilling() {
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-xl font-display font-bold text-slate-100 flex items-center gap-2">
                     {plan.name}
-                    {key === "Growth" && <Zap className="w-5 h-5 text-saffron-500" />}
-                    {key === "Enterprise" && <Sparkles className="w-5 h-5 text-amber-400" />}
+                    {key === "Free Tier" && <Sparkles className="w-5 h-5 text-emerald-400" />}
+                    {key === "Professional" && <Zap className="w-5 h-5 text-saffron-500" />}
+                    {key === "Enterprise" && <Crown className="w-5 h-5 text-amber-400" />}
                   </h3>
                 </div>
                 <p className="text-xs text-slate-400 min-h-[32px]">{plan.description}</p>
 
                 {/* Price Display */}
                 <div className="mt-5 pt-4 border-t border-slate-800/80 flex items-baseline gap-2">
-                  <span className="text-4xl font-black text-white font-display">₹{price.toLocaleString("en-IN")}</span>
-                  <span className="text-xs text-slate-400 font-medium">
-                    / {billingCycle === "yearly" ? "year" : "month"}
-                  </span>
+                  {plan.isFree ? (
+                    <>
+                      <span className="text-4xl font-black text-emerald-400 font-display">Free</span>
+                      <span className="text-xs text-slate-400 font-medium">/ 3 Days Trial</span>
+                    </>
+                  ) : plan.isCustom ? (
+                    <>
+                      <span className="text-4xl font-black text-amber-300 font-display">Custom</span>
+                      <span className="text-xs text-slate-400 font-medium">/ Tailored Plan</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-4xl font-black text-white font-display">₹{price.toLocaleString("en-IN")}</span>
+                      <span className="text-xs text-slate-400 font-medium">
+                        / {billingCycle === "yearly" ? "year" : "month"}
+                      </span>
+                    </>
+                  )}
                 </div>
-                {billingCycle === "yearly" && (
+                {!plan.isFree && !plan.isCustom && billingCycle === "yearly" && (
                   <p className="text-[11px] text-emerald-400 font-medium mt-1">
                     Equivalent to ₹{Math.round(price / 12).toLocaleString("en-IN")}/mo (Billed annually)
+                  </p>
+                )}
+                {plan.isFree && (
+                  <p className="text-[11px] text-emerald-300/80 font-medium mt-1">
+                    No credit card required. Instant 3-day access.
+                  </p>
+                )}
+                {plan.isCustom && (
+                  <p className="text-[11px] text-amber-400/80 font-medium mt-1">
+                    Custom deployment, multi-branch, dedicated support.
                   </p>
                 )}
               </div>
@@ -507,31 +607,64 @@ export default function AdminBilling() {
               </div>
 
               {/* Action Button */}
-              <button
-                disabled={isProcessing}
-                onClick={() => handleSubscribe(key)}
-                className={`mt-6 w-full py-3.5 px-6 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg ${
-                  isActive
-                    ? "bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-600/30"
-                    : isPopular
-                    ? "bg-gradient-to-r from-saffron-500 via-amber-500 to-yellow-500 text-slate-950 hover:brightness-110 active:scale-95 shadow-saffron-500/20"
-                    : "bg-slate-800 hover:bg-slate-700 text-white active:scale-95 border border-slate-700"
-                }`}
-              >
-                {isProcessing ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" /> Processing...
-                  </>
-                ) : isActive ? (
-                  <>
-                    <RefreshCw className="w-4 h-4" /> Renew / Extend Plan
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="w-4 h-4" /> Subscribe with Razorpay
-                  </>
-                )}
-              </button>
+              {plan.isFree ? (
+                <button
+                  disabled={isProcessing || isActive}
+                  onClick={handleActivateTrial}
+                  className={`mt-6 w-full py-3.5 px-6 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg ${
+                    isActive
+                      ? "bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 cursor-default"
+                      : "bg-emerald-600 hover:bg-emerald-500 text-white active:scale-95 shadow-emerald-500/20"
+                  }`}
+                >
+                  {isProcessing ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Activating...
+                    </>
+                  ) : isActive ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4" /> Free Trial Active
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" /> Start Free 3-Day Trial
+                    </>
+                  )}
+                </button>
+              ) : plan.isCustom ? (
+                <button
+                  onClick={handleCustomContact}
+                  className="mt-6 w-full py-3.5 px-6 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 active:scale-95"
+                >
+                  <ArrowRight className="w-4 h-4" /> Contact Sales / Custom Plan
+                </button>
+              ) : (
+                <button
+                  disabled={isProcessing}
+                  onClick={() => handleSubscribe(key)}
+                  className={`mt-6 w-full py-3.5 px-6 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg ${
+                    isActive
+                      ? "bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-600/30"
+                      : isPopular
+                      ? "bg-gradient-to-r from-saffron-500 via-amber-500 to-yellow-500 text-slate-950 hover:brightness-110 active:scale-95 shadow-saffron-500/20"
+                      : "bg-slate-800 hover:bg-slate-700 text-white active:scale-95 border border-slate-700"
+                  }`}
+                >
+                  {isProcessing ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Processing...
+                    </>
+                  ) : isActive ? (
+                    <>
+                      <RefreshCw className="w-4 h-4" /> Renew / Extend Plan
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4" /> Subscribe with Razorpay
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           );
         })}

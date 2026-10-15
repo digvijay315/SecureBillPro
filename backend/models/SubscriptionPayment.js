@@ -32,7 +32,7 @@ const subscriptionPaymentSchema = new mongoose.Schema(
     },
     planName: {
       type: String,
-      enum: ["Starter", "Growth", "Enterprise"],
+      enum: ["Free Tier", "Professional", "Enterprise", "Starter", "Growth"],
       required: true,
     },
     billingCycle: {

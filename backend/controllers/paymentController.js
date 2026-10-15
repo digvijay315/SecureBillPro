@@ -21,52 +21,56 @@ const getRazorpayInstance = () => {
 };
 
 const PLANS = {
-  Starter: {
-    id: "Starter",
-    name: "Starter",
-    monthlyPrice: 1499,
-    yearlyPrice: 14990,
-    durationDays: { monthly: 30, yearly: 365 },
-    description: "10 rooms tak ke chhote hotel/guest house ke liye",
+  "Free Tier": {
+    id: "Free Tier",
+    name: "Free Tier",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    durationDays: { monthly: 3, yearly: 3 },
+    trialDays: 3,
+    isFree: true,
+    description: "Free for 3 days trial. Perfect for small boutique hotels & guesthouses.",
     features: [
-      "Room booking & Front desk",
-      "Billing & GST Invoice generation",
-      "Up to 2 Staff accounts",
-      "Reports & Daily revenue stats",
-      "Standard Email Support",
+      "Up to 20 Rooms",
+      "Basic POS & Billing",
+      "Standard Analytics",
+      "Email Support",
+      "2 Staff Accounts",
+      "3 Days Full Free Trial",
     ],
   },
-  Growth: {
-    id: "Growth",
-    name: "Growth",
-    monthlyPrice: 3999,
-    yearlyPrice: 39990,
+  Professional: {
+    id: "Professional",
+    name: "Professional",
+    monthlyPrice: 1499,
+    yearlyPrice: 14990,
     popular: true,
     durationDays: { monthly: 30, yearly: 365 },
-    description: "Restaurant & Bar wale hotels ke liye complete setup",
+    description: "Ideal for mid-sized hotels with a restaurant.",
     features: [
-      "Starter ka sab kuch",
-      "Restaurant POS & KOT billing",
-      "Kitchen Display (KDS) & QR Ordering",
-      "Up to 10 Staff accounts",
-      "Inventory & Stock tracking",
-      "Priority WhatsApp & Phone Support",
+      "Up to 100 Rooms",
+      "Advanced POS & KOT",
+      "Advanced Analytics & Reports",
+      "Priority 24/7 Support",
+      "Unlimited Staff Accounts",
+      "GST Invoicing",
     ],
   },
   Enterprise: {
     id: "Enterprise",
     name: "Enterprise",
-    monthlyPrice: 9999,
-    yearlyPrice: 99990,
-    durationDays: { monthly: 30, yearly: 365 },
-    description: "Chain aur bade luxury resorts ke liye",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    isCustom: true,
+    durationDays: { monthly: 365, yearly: 365 },
+    description: "For large hotel chains and luxury resorts.",
     features: [
-      "Growth ka sab kuch",
-      "Multi-property management",
-      "Unlimited Staff accounts",
-      "Advanced Analytics & Custom Excel Exports",
-      "24/7 Dedicated Account Manager",
-      "Custom Branding & API access",
+      "Unlimited Rooms",
+      "Multi-Property Management",
+      "Custom API Integrations",
+      "Dedicated Account Manager",
+      "Custom Feature Requests",
+      "On-premise Deployment Option",
     ],
   },
 };
@@ -326,10 +330,49 @@ const getMyInvoices = async (req, res) => {
   }
 };
 
+// @desc    Activate 3-Day Free Trial
+// @route   POST /api/payment/activate-trial
+// @access  Private (Hotel Admin)
+const activateTrial = async (req, res) => {
+  try {
+    const hotel = await Hotel.findById(req.user.hotelId);
+    if (!hotel) {
+      return res.status(404).json({ success: false, message: "Associated Hotel not found" });
+    }
+
+    // Check if hotel has ever used trial or has active plan
+    const now = new Date();
+    const trialDays = 3;
+    const validUntil = new Date(now.getTime() + trialDays * 24 * 60 * 60 * 1000);
+
+    hotel.subscription = {
+      plan: "Free Tier",
+      isActive: true,
+      validUntil: validUntil,
+    };
+    await hotel.save();
+
+    res.json({
+      success: true,
+      message: "3-Day Free Trial activated successfully!",
+      subscription: {
+        plan: "Free Tier",
+        isActive: true,
+        validUntil: validUntil,
+        daysRemaining: trialDays,
+      },
+    });
+  } catch (error) {
+    console.error("Free trial activation error:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to activate free trial" });
+  }
+};
+
 module.exports = {
   getPlans,
   getSubscriptionStatus,
   createOrder,
   verifyPayment,
+  activateTrial,
   getMyInvoices,
 };

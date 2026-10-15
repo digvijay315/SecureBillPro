@@ -88,19 +88,19 @@ export default function Sidebar({ isOpen, closeSidebar }) {
           onClick={closeSidebar}
         />
       )}
-      <aside className={`w-64 glass border-r border-lagoon-700/25 min-h-[calc(100vh-80px)] p-4 flex flex-col gap-2 no-print shrink-0 
+      <aside className={`w-72 glass border-r border-lagoon-700/25 min-h-[calc(100vh-80px)] p-4 flex flex-col gap-3 no-print shrink-0 
         fixed md:static top-[73px] md:top-0 bottom-0 left-0 z-50 md:z-0
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         bg-slate-950 md:bg-transparent overflow-y-auto
       `}>
-        <div className="px-3 py-2">
-          <p className="text-[10px] uppercase font-bold tracking-widest text-saffron-500/80">
+        <div className="px-3 pt-2 pb-1">
+          <p className="text-xs uppercase font-extrabold tracking-wider text-saffron-400">
             Admin Control Center
           </p>
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           {/* Main Top Items */}
           {topMenuItems.map((item) => {
             const Icon = item.icon;
@@ -111,42 +111,42 @@ export default function Sidebar({ isOpen, closeSidebar }) {
                 key={item.path}
                 to={item.path}
                 onClick={() => closeSidebar && closeSidebar()}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group text-sm ${
+                className={`flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 group text-base font-medium ${
                   isActive
                     ? "bg-gradient-to-r from-saffron-500/20 via-saffron-500/10 to-transparent border border-saffron-500/35 text-saffron-400 font-bold shadow-sm shadow-saffron-500/5"
-                    : "hover:bg-lagoon-800/40 hover:text-lagoon-100 text-slate-400 border border-transparent"
+                    : "hover:bg-lagoon-800/40 hover:text-lagoon-100 text-slate-300 border border-transparent"
                 }`}
               >
-                <Icon className={`w-4 h-4 transition-colors ${isActive ? "text-saffron-400" : "text-slate-400 group-hover:text-lagoon-200"}`} />
+                <Icon className={`w-5 h-5 shrink-0 transition-colors ${isActive ? "text-saffron-400" : "text-slate-400 group-hover:text-lagoon-200"}`} />
                 <span>{item.name}</span>
               </Link>
             );
           })}
 
           {/* Manage Accordion Dropdown */}
-          <div className="my-1 border-t border-b border-lagoon-700/20 py-1.5">
+          <div className="my-1 border-t border-b border-lagoon-700/30 py-2">
             <button
               type="button"
               onClick={() => setIsManageOpen((prev) => !prev)}
-              className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 group text-sm ${
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group text-base font-medium ${
                 isManageActive
                   ? "bg-saffron-500/10 border border-saffron-500/30 text-saffron-400 font-bold"
-                  : "hover:bg-lagoon-800/40 hover:text-lagoon-100 text-slate-400 border border-transparent"
+                  : "hover:bg-lagoon-800/40 hover:text-lagoon-100 text-slate-300 border border-transparent"
               }`}
             >
-              <div className="flex items-center gap-3">
-                <Layers className={`w-4 h-4 transition-colors ${isManageActive ? "text-saffron-400" : "text-slate-400 group-hover:text-lagoon-200"}`} />
+              <div className="flex items-center gap-3.5">
+                <Layers className={`w-5 h-5 shrink-0 transition-colors ${isManageActive ? "text-saffron-400" : "text-slate-400 group-hover:text-lagoon-200"}`} />
                 <span>Manage</span>
               </div>
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-200 ${
-                  isManageOpen ? "rotate-180 text-saffron-400" : "text-slate-500"
+                className={`w-5 h-5 transition-transform duration-200 ${
+                  isManageOpen ? "rotate-180 text-saffron-400" : "text-slate-400"
                 }`}
               />
             </button>
 
             {isManageOpen && (
-              <div className="mt-1 pl-4 flex flex-col gap-1 border-l-2 border-saffron-500/25 ml-4">
+              <div className="mt-2 pl-3 flex flex-col gap-1.5 border-l-2 border-saffron-500/30 ml-5">
                 {manageSubItems.map((sub) => {
                   const SubIcon = sub.icon;
                   const isSubActive = location.pathname === sub.path;
@@ -156,13 +156,13 @@ export default function Sidebar({ isOpen, closeSidebar }) {
                       key={sub.path}
                       to={sub.path}
                       onClick={() => closeSidebar && closeSidebar()}
-                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-all duration-150 ${
+                      className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm transition-all duration-150 ${
                         isSubActive
                           ? "bg-saffron-500/20 text-saffron-400 font-bold border border-saffron-500/30 shadow-sm"
-                          : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/40"
+                          : "text-slate-300 hover:text-white hover:bg-slate-800/50 font-medium"
                       }`}
                     >
-                      <SubIcon className={`w-3.5 h-3.5 ${isSubActive ? "text-saffron-400" : "text-slate-400"}`} />
+                      <SubIcon className={`w-4 h-4 shrink-0 ${isSubActive ? "text-saffron-400" : "text-slate-400"}`} />
                       <span>{sub.name}</span>
                     </Link>
                   );
@@ -181,13 +181,13 @@ export default function Sidebar({ isOpen, closeSidebar }) {
                 key={item.path}
                 to={item.path}
                 onClick={() => closeSidebar && closeSidebar()}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group text-sm ${
+                className={`flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 group text-base font-medium ${
                   isActive
                     ? "bg-gradient-to-r from-saffron-500/20 via-saffron-500/10 to-transparent border border-saffron-500/35 text-saffron-400 font-bold shadow-sm shadow-saffron-500/5"
-                    : "hover:bg-lagoon-800/40 hover:text-lagoon-100 text-slate-400 border border-transparent"
+                    : "hover:bg-lagoon-800/40 hover:text-lagoon-100 text-slate-300 border border-transparent"
                 }`}
               >
-                <Icon className={`w-4 h-4 transition-colors ${isActive ? "text-saffron-400" : "text-slate-400 group-hover:text-lagoon-200"}`} />
+                <Icon className={`w-5 h-5 shrink-0 transition-colors ${isActive ? "text-saffron-400" : "text-slate-400 group-hover:text-lagoon-200"}`} />
                 <span>{item.name}</span>
               </Link>
             );

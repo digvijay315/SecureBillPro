@@ -500,9 +500,9 @@ export default function Subscriptions() {
                   </label>
                   <div className="grid grid-cols-3 gap-3">
                     {[
-                      { id: 'Starter', label: 'Starter', price: '₹1,499' },
-                      { id: 'Growth', label: 'Growth', price: '₹3,999' },
-                      { id: 'Enterprise', label: 'Enterprise', price: '₹9,999' },
+                      { id: 'Free Tier', label: 'Free Tier', price: 'Free (3 Days)' },
+                      { id: 'Professional', label: 'Professional', price: '₹1,499' },
+                      { id: 'Enterprise', label: 'Enterprise', price: 'Custom' },
                     ].map((p) => (
                       <button
                         type="button"

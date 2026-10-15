@@ -138,7 +138,7 @@ const hotelSchema = new mongoose.Schema(
       default: '3-Star',
     },
     subscription: {
-      plan: { type: String, enum: ['none', 'Starter', 'Growth', 'Enterprise'], default: 'none' },
+      plan: { type: String, enum: ['none', 'Free Tier', 'Professional', 'Enterprise', 'Starter', 'Growth'], default: 'none' },
       validUntil: { type: Date, default: null },
       isActive: { type: Boolean, default: false },
     }
