@@ -49,11 +49,11 @@ export default function Login({ onLoginSuccess }) {
             <div className="bg-white/5 p-2 rounded-3xl backdrop-blur-md inline-block mb-8 shadow-2xl border border-white/10">
               <img src="/secure_bill_pro_logo.jpg" alt="Secure Bill Pro Logo" className="w-24 h-24 rounded-2xl object-cover" />
             </div>
-            <h1 className="text-5xl font-extrabold mb-6 tracking-tight font-display text-white !text-white" style={{ color: '#ffffff' }}>
+            <h1 className="text-5xl font-extrabold mb-6 tracking-tight font-display !text-white" style={{ color: '#ffffff' }}>
               Secure Bill Pro
             </h1>
             <p className="text-xs uppercase tracking-widest text-[#BA8551] font-bold mb-4">Hotel Management Portal</p>
-            <p className="text-lg text-white/80 leading-relaxed font-light">
+            <p className="text-lg leading-relaxed font-light !text-white/85" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
               The ultimate premium dashboard to manage your hotel, track operations, and scale your business securely.
             </p>
           </motion.div>
